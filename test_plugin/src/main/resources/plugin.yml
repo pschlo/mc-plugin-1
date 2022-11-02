@@ -1,0 +1,4 @@
+main: com.pschlo.App
+name: BlankPlugin
+version: 0.1
+api-version: 1.18
