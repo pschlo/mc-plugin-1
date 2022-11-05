@@ -12,8 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.BoundingBox;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.bukkit.util.noise.SimplexNoiseGenerator;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.EventException;
@@ -34,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+
+import com.pschlo.WorldAwareBox;
 
 
 
@@ -264,7 +267,8 @@ public class App extends JavaPlugin implements Listener {
         Location loc = e.getLocation();
         World world = loc.getWorld();
 
-        if (!allBlocksInRegion(Material.AIR, loc.clone().add(-3, 2, -3), loc.clone().add(3, 5, 3)))
+        WorldAwareBox box = WorldAwareBox.of(loc.clone().add(-3, 2, -3), loc.clone().add(3, 5, 3));
+        if (!(box.containsOnly(Material.AIR)))
             return;
 
         Creeper creeper = (Creeper) e.getEntity();
@@ -329,58 +333,12 @@ public class App extends JavaPlugin implements Listener {
         Location loc = e.getLocation();
         World world = loc.getWorld();
 
-        // TODO: use builtin Box class
-        if (!allBlocksInRegion(Material.AIR, loc.clone().add(-3, 2, -3), loc.clone().add(3, 5, 3)))
+        WorldAwareBox box = WorldAwareBox.of(loc.clone().add(-3, 2, -3), loc.clone().add(3, 5, 3));
+        if (!(box.containsOnly(Material.AIR)))
             return;
 
         Phantom phantom = (Phantom) world.spawnEntity(e.getLocation().add(0, 3, 0), EntityType.PHANTOM);
         phantom.addPassenger(e.getEntity());
-    }
-    
-    public static boolean allBlocksInRegion(Material material, Location pos1, Location pos2) {
-        // delta represents pos2-pos1 in blocks
-        int delta_x = pos2.getBlockX()-pos1.getBlockX();
-        int delta_y = pos2.getBlockY()-pos1.getBlockY();
-        int delta_z = pos2.getBlockZ()-pos1.getBlockZ();
-
-        double step_x = Math.copySign(1, delta_x);
-        double step_y = Math.copySign(1, delta_y);
-        double step_z = Math.copySign(1, delta_z);
-
-        //Bukkit.broadcastMessage("delta_x is " + delta_x);
-        //Bukkit.broadcastMessage("delta_y is " + delta_y);
-        //Bukkit.broadcastMessage("delta_z is " + delta_z);
-
-        Location pos = new Location(pos1.getWorld(), 0, 0, 0);
-
-        // TODO: find smallest and largest corner and then use these in loop
-        // this way we can directly use dx/dy/dz and don't need to update pos manually (?)
-
-        pos.setX(pos1.getX());
-        for (int dx=0; dx<=Math.abs(delta_x); dx++) {
-            
-            pos.setY(pos1.getY());
-            for (int dy=0; dy<=Math.abs(delta_y); dy++) {
-
-                pos.setZ(pos1.getZ());
-                for (int dz=0; dz<=Math.abs(delta_z); dz++) {
-
-                    Material currMat = pos.getBlock().getType();
-                    if (currMat != material) {
-                        //Bukkit.broadcastMessage("" + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " check failed " + currMat);
-                        return false;
-                    }
-
-                    // if (dy == 0) Bukkit.broadcastMessage("" + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " check passed " + currMat);
-                    //if (dy == 0) Bukkit.broadcastMessage("z is " + pos.getZ() + ". Increasing z by " + Math.signum(delta_z));
-                    pos.setZ(pos.getZ()+step_z);
-                }
-                pos.setY(pos.getY()+step_y);
-            }
-            pos.setX(pos.getX()+step_x);
-        }
-
-        return true;
     }
 
     // returns true with given probability between 0 and 100
