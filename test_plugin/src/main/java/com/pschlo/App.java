@@ -112,52 +112,12 @@ public class App extends JavaPlugin implements Listener {
         Vector newVel = currVel.clone();
         //Vector diff = currVel.clone().subtract(oldVel);
         double length = currVel.length();
-        //double diffLength = diff.length();
-        //double newLength = length;
 
-        //diff.setY(0);
 
         /*double t = 1;
         if (currVel.getX() > t || currVel.getY() > t || currVel.getZ() > t) {
             Bukkit.broadcastMessage("TOO FAST! " + currVel);
         }*/
-
-
-        //double newX = currVel.getX() * func(currVel.getX());
-        //double newY = currVel.getY() * func(currVel.getY());
-        //double newZ = currVel.getZ() * func(currVel.getZ());
-
-        //newVel = new Vector(newX, newY, newZ);
-
-        // adapt diff
-        // min_speed should be about 0.15
-        /*double min_speed = 0.15;
-        double min_diff = 0;
-        double max_diff = 1;
-        double adaDiffX, adaDiffY, adaDiffZ;
-
-        if (Math.abs(newX) > min_speed && min_diff < Math.abs(diffX) && Math.abs(diffX) < max_diff)
-            adaDiffX = diffX * 10 * Math.abs(newX);
-        else
-            adaDiffX = 0;
-
-        if (Math.abs(newY) > min_speed && min_diff < Math.abs(diffY) && Math.abs(diffY) < max_diff)
-            adaDiffY = diffY * 10 * Math.abs(newY);
-        else
-            adaDiffY = 0;
-
-        if (Math.abs(newZ) > min_speed && min_diff < Math.abs(diffZ) && Math.abs(diffZ) < max_diff)
-            adaDiffZ = diffZ * 10 * Math.abs(newZ);
-        else
-            adaDiffZ = 0;*/
-
-            
-        //double adaDiffX = Math.abs(newX) > 0.2 ? diffX * 5 * Math.abs(newX) : 0;
-        //double adaDiffY = Math.abs(newY) > 0.2 ? diffY * 5 * Math.abs(newY) : 0;
-        //double diffY = 0;
-        //double adaDiffZ = Math.abs(newZ) > 0.2 ? diffZ * 5 * Math.abs(newZ) : 0;
-        
-        //Vector adaDiff = new Vector(adaDiffX, adaDiffY, adaDiffZ);
 
 
         // get change in direction of velocity (orthogonal projection)
@@ -201,22 +161,6 @@ public class App extends JavaPlugin implements Listener {
             Bukkit.broadcastMessage("isOnlyAir: " + isOnlyAir);
 
 
-
-
-        //double maxDiff = Math.max(Math.abs(diff.getZ()), Math.max(Math.abs(diff.getX()), Math.abs(diff.getY())));
-        //Vector adjDiff = new Vector();
-        // filter both too small and too big diffs
-        // big diffs are filtered because e.g. when player attacks bee
-        // increase every coordinate according to their speed
-        //newVel.length() > 0.1
-        //if (0 < diffLength && maxDiff < 0.4) {
-        //    adjDiff.setX(diff.getX() * Math.abs(newVel.getX() * 7));
-        //    adjDiff.setY(diff.getY() * Math.abs(newVel.getY() * 7));
-        //    adjDiff.setZ(diff.getZ() * Math.abs(newVel.getZ() * 7));
-        //}
-
-
-
         // project velocity onto diff direction
         /*Vector velProjDiff;
         Vector vel = newVel.clone();
@@ -232,18 +176,7 @@ public class App extends JavaPlugin implements Listener {
         adjDiff.add(velProjDiff.clone().multiply(1));
         */
 
-
         //newVel.add(projDiff);
-    
-
-        //newVel = currVel;
-
-        //if (length > 0 && length < 0.5) {
-        //    newVel.multiply(1.2);
-        //    newLength = newLength*2;
-        //}
-        // enhance diff effect
-        //newVel.add(diff.clone().multiply(4*newLength));
         
         //diff.subtract(beeMap.getOrDefault(bee.getUniqueId(), new Vector(0, 0, 0)));
         //if (length > 0 && length < 0.5) newVel = currVel.add(diff.multiply(0)).multiply(10);
@@ -262,67 +195,70 @@ public class App extends JavaPlugin implements Listener {
             Bukkit.broadcastMessage("X: " + newVel.getX() + " Y: "+newVel.getY()+" Z: "+newVel.getZ());
             Bukkit.broadcastMessage("");
         } */
-
-        //Vector newVel = currVel.multiply(0.5/currVel.length());
-        //Bukkit.broadcastMessage("" + bee.getUniqueId() + " speed is " + bee.getVelocity().length());
-        //Vector newVel = new Vector(oldVel.getX()*1.2, oldVel.getY(), oldVel.getZ()*1.2);
-        //bee.setVelocity(bee.getEyeLocation().getDirection().multiply(0.2));
-        // check if bee is already attacking someone
     }
 
+    // given the current speed (length of velocity vector), this function returns how much length should be added to the velocity vector
     public static double func(double speed, double maxSpeed) {
+
+        /*
+        // bell curve
         double height = 2;
         double stretch = 0.2;  // must be greater than 0
         double x_shift = 0.3;  // positive means right shift
         double hardness = 1;  // must be non-negative
         double y_shift = 0.9;  // where the bottom line is
 
-        //double res = (height-y_shift) * Math.pow(2, -Math.pow((x-x_shift)/stretch, 2*hardness)) + y_shift;
+        double res = (height-y_shift) * Math.pow(2, -Math.pow((x-x_shift)/stretch, 2*hardness)) + y_shift;
+        */
         
-        //double a = 2;
+
         /*
-        if (x < 0.25) {
-            return 2;
-        } else if (x < 0.375) {
-            return -(32)*x*x + (16)*x + (0);
-        } else if (x < 0.5) {
-            return (32)*x*x - (32)*x + (9);
-        } else {
-            return 1;
-        } */
+        function consists of 5 parts:
+            1) constant
+            2) linear increase
+            3) constant
+            4) linear decrease
+            5) constant
+        */
 
+        // the function results for the different parts
+        double level1 = 0;
+        //double level3 = 0.5*maxSpeed;
+        double level3 = 0.15;
+        double level5 = 0;
 
-        double lvl_start = 0;
-        //double lvl_mid = 0.5*maxSpeed;
-        double lvl_mid = 0.15;
-        double lvl_end = 0;
+        // at which speeds which parts begin/end
+        double end1 = 0;
+        double start3 = maxSpeed*0.3;
+        double end3 = maxSpeed*0.8;
+        double start5 = maxSpeed;
 
-        double start_mid = maxSpeed*0.3;
-        double start_end = maxSpeed*0.8;
-        double end_end = maxSpeed;
-
-        if (speed < start_mid)  
-            return ((lvl_mid-lvl_start)/start_mid) * speed + lvl_start;
-        else if (speed < start_end)
-            return lvl_mid;
-        else if (speed < end_end)
-            return ((lvl_end-lvl_mid)/(end_end-start_end)) * (speed-start_end) + lvl_mid;
+        if (speed < end1)
+            // part 1
+            return level1;
+        else if (speed < start3)
+            // part 2
+            return ((level3-level1)/(start3-end1)) * (speed-end1) + level1;
+        else if (speed < end3)
+            // part 3
+            return level3;
+        else if (speed < start5)
+            // part 4
+            return ((level5-level3)/(start5-end3)) * (speed-end3) + level3;
         else
-            return lvl_end;
-        //return res;
+            // part 5
+            return level5;
     }
 
     @EventHandler
-    public void onCreatureSpawn2(CreatureSpawnEvent e) {
+    public void onCreeperSpawn(CreatureSpawnEvent e) {
         if (!(e.getEntityType() == EntityType.CREEPER &&
             //e.getSpawnReason() == SpawnReason.NATURAL &&
             !(e.getEntity().isInsideVehicle())))
             return;
         
-        int percentage = 10;
-    
-        int randNum = ThreadLocalRandom.current().nextInt(0, 100/percentage);
-        if (randNum != 0)
+        int PROB_FLY = 10;
+        if (!(getRandTrue(PROB_FLY)))
             return;
 
         Location loc = e.getLocation();
@@ -380,16 +316,14 @@ public class App extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onCreatureSpawn(CreatureSpawnEvent e) {
+    public void onSkeletonSpawn(CreatureSpawnEvent e) {
         if (!(e.getEntityType() == EntityType.SKELETON &&
             //e.getSpawnReason() == SpawnReason.NATURAL &&
             !(e.getEntity().isInsideVehicle())))
             return;
 
-        int flyingSkeletonPercent = 10;
-        
-        int randNum = ThreadLocalRandom.current().nextInt(0, 100/flyingSkeletonPercent);
-        if (randNum != 0)
+        int PROB_FLY = 10;
+        if (!(getRandTrue(PROB_FLY)))
             return;
 
         Location loc = e.getLocation();
@@ -419,6 +353,9 @@ public class App extends JavaPlugin implements Listener {
 
         Location pos = new Location(pos1.getWorld(), 0, 0, 0);
 
+        // TODO: find smallest and largest corner and then use these in loop
+        // this way we can directly use dx/dy/dz and don't need to update pos manually (?)
+
         pos.setX(pos1.getX());
         for (int dx=0; dx<=Math.abs(delta_x); dx++) {
             
@@ -445,6 +382,13 @@ public class App extends JavaPlugin implements Listener {
 
         return true;
     }
+
+    // returns true with given probability between 0 and 100
+    // always returns false for prob <= 0 and always true for prob >= 100
+    public static boolean getRandTrue(int prob) {
+        return ThreadLocalRandom.current().nextInt(0, 100) < prob;
+    }
+
 
     /*
     private boolean isLookingAt(LivingEntity e1, Entity e2) {
