@@ -1,16 +1,16 @@
 package com.pschlo;
 
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.bukkit.block.Block;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Iterator;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.util.BoundingBox;
 
-class WorldAwareBox extends BoundingBox {
+
+class WorldAwareBox extends BoundingBox implements Iterable<Block> {
     World world;
 
     public static WorldAwareBox of(Vector corner1, Vector corner2, World world) {
@@ -50,21 +50,20 @@ class WorldAwareBox extends BoundingBox {
     }
 
 
-    // stops counting after maxCount
-    public BlockCountRes countBlocks(Material material, int maxCount) {
-        if (maxCount < 1) throw new IllegalArgumentException("maxCount must be at least 1");
-        int count = 0;
-        loop:
-        for (int x=getMinBlockX(); x<=getMaxBlockX(); x++)
-            for (int y=getMinBlockY(); y<=getMaxBlockY(); y++)
-                for (int z=getMinBlockZ(); z<=getMaxBlockZ(); z++) {
-                    if (world.getBlockAt(x, y, z).getType() == material) {
-                        count++;
-                        if (count == maxCount)
-                            break loop;
-                    }
-                }
-        return new BlockCountRes(count, (int) getVolume());
+    // stops counting after findAtMost findings
+    public BlockCountRes countBlocks(Material material, int findAtMost) {
+        if (findAtMost < 1) throw new IllegalArgumentException("findAtMost must be at least 1");
+        int numFound = 0;
+        int numChecked = 0;
+        for (Block block : this) {
+            numChecked++;
+            if (block.getType() == material) {
+                numFound++;
+                if (numFound == findAtMost)
+                    break;
+            }
+        }
+        return new BlockCountRes(numFound, numChecked);
     }
 
     public BlockCountRes countBlocks(Material material) {
@@ -72,31 +71,22 @@ class WorldAwareBox extends BoundingBox {
     }
 
     public boolean contains(Material material) {
-        return countBlocks(material, 1).count > 0;
+        return countBlocks(material, 1).numFound > 0;
     }
 
     public boolean containsOnly(Material material) {
         BlockCountRes res = countBlocks(material);
-        return res.count == res.total;
+        return res.numFound == res.numChecked;
     }
 
-    public int getMinBlockX() {
-        return Location.locToBlock(getMinX());
+    public static int locToBlock(double loc) {
+        return Location.locToBlock(loc);
     }
-    public int getMinBlockY() {
-        return Location.locToBlock(getMinY());
+
+    @Override
+    public Iterator<Block> iterator() {
+        return new BoxIterator(this);
     }
-    public int getMinBlockZ() {
-        return Location.locToBlock(getMinZ());
-    }
-    public int getMaxBlockX() {
-        return Location.locToBlock(getMaxX());
-    }
-    public int getMaxBlockY() {
-        return Location.locToBlock(getMaxY());
-    }
-    public int getMaxBlockZ() {
-        return Location.locToBlock(getMaxZ());
-    }
+
 }
 
