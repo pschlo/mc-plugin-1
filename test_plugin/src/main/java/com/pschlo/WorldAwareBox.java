@@ -4,6 +4,7 @@ import org.bukkit.util.Vector;
 import org.bukkit.block.Block;
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,40 +14,33 @@ import org.bukkit.util.BoundingBox;
 class WorldAwareBox extends BoundingBox implements Iterable<Block> {
     World world;
 
+    public WorldAwareBox(World world, BoundingBox box) {
+        this.resize(box.getMinX(), box.getMinY(), box.getMinZ(), box.getMaxX(), box.getMaxY(), box.getMaxZ());
+        this.world = world;
+    }
+
     public static WorldAwareBox of(Vector corner1, Vector corner2, World world) {
-        WorldAwareBox box = (WorldAwareBox) BoundingBox.of(corner1, corner2);
-        return box.setWorld(world);
+        return new WorldAwareBox(world, BoundingBox.of(corner1, corner2));
     }
 
     public static WorldAwareBox of(Location corner1, Location corner2) {
-        WorldAwareBox box = (WorldAwareBox) BoundingBox.of(corner1, corner2);
-        return box.setWorld(corner1.getWorld());
+        return new WorldAwareBox(corner1.getWorld(), BoundingBox.of(corner1, corner2));
     }
 
     public static WorldAwareBox of(Block corner1, Block corner2) {
-        WorldAwareBox box = (WorldAwareBox) BoundingBox.of(corner1, corner2);
-        return box.setWorld(corner1.getWorld());
+        return new WorldAwareBox(corner1.getWorld(), BoundingBox.of(corner1, corner2));
     }
 
     public static WorldAwareBox of(Block block) {
-        WorldAwareBox box = (WorldAwareBox) BoundingBox.of(block);
-        return box.setWorld(block.getWorld());
+        return new WorldAwareBox(block.getWorld(), BoundingBox.of(block));
     }
 
     public static WorldAwareBox of(Vector center, double x, double y, double z, World world) {
-        WorldAwareBox box = (WorldAwareBox) BoundingBox.of(center, x, y, z);
-        return box.setWorld(world);
+        return new WorldAwareBox(world, BoundingBox.of(center, x, y, z));
     }
 
     public static WorldAwareBox of(Location center, double x, double y, double z) {
-        WorldAwareBox box = (WorldAwareBox) BoundingBox.of(center, x, y, z);
-        return box.setWorld(center.getWorld());
-    }
-
-
-    public WorldAwareBox setWorld(World world) {
-        this.world = world;
-        return this;
+        return new WorldAwareBox(center.getWorld(), BoundingBox.of(center, x, y, z));
     }
 
 

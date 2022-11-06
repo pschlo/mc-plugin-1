@@ -1,9 +1,9 @@
 package com.pschlo;
 
-public class BlockCountResult {
+public class BlockCountRes {
     int numFound, numChecked;
 
-    public BlockCountResult(int numFound, int numChecked) {
+    public BlockCountRes(int numFound, int numChecked) {
         this.numFound = numFound;
         this.numChecked = numChecked;
     }

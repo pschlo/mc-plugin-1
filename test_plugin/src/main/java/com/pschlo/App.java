@@ -3,40 +3,24 @@ package com.pschlo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.RegionAccessor;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.command.*;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import org.bukkit.util.noise.SimplexNoiseGenerator;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.EventException;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 // import org.bukkit.*;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.util.BlockIterator;
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.pschlo.WorldAwareBox;
 
 
 
@@ -52,7 +36,7 @@ public class App extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         int beeCreeperRange = 30;
 
-        BukkitTask task = new BukkitRunnable() {
+        new BukkitRunnable() {
             public void run() {
                 //counter++;
                 List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -114,7 +98,7 @@ public class App extends JavaPlugin implements Listener {
         //Vector oldVel = beeMap.getOrDefault(bee.getUniqueId(), currVel).clone();
         Vector newVel = currVel.clone();
         //Vector diff = currVel.clone().subtract(oldVel);
-        double length = currVel.length();
+        //double length = currVel.length();
 
 
         /*double t = 1;
@@ -280,8 +264,8 @@ public class App extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
-        World world = p.getWorld();
+        //Player p = e.getPlayer();
+        //World world = p.getWorld();
         //Bukkit.broadcastMessage("Welcome to the server!");
         /*
         Bee bee = (Bee) world.spawnEntity(p.getLocation(), EntityType.BEE);
@@ -302,7 +286,7 @@ public class App extends JavaPlugin implements Listener {
     public void onBowShoot(EntityShootBowEvent e) {
         Arrow arrow = (Arrow) e.getProjectile();
         arrow.setGravity(false);
-        Vector new_vector = arrow.getVelocity().multiply(0.1);
+        //Vector new_vector = arrow.getVelocity().multiply(0.1);
         // e.getProjectile().setVelocity(new_vector);
     }
 
@@ -326,7 +310,7 @@ public class App extends JavaPlugin implements Listener {
             !(e.getEntity().isInsideVehicle())))
             return;
 
-        int PROB_FLY = 10;
+        int PROB_FLY = 100;
         if (!(getRandTrue(PROB_FLY)))
             return;
 
