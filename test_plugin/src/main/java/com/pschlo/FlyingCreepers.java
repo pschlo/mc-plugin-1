@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -43,17 +45,24 @@ public class FlyingCreepers implements Listener {
                         List<Entity> passengers = bee.getPassengers();
                         if (!(passengers.size() == 1 && passengers.get(0).getType() == EntityType.CREEPER))
                             continue;
+                        
+                        // check if looking at player
+                        if (!(bee.hasLineOfSight(p)))
+                            continue;
+                        else
+                            Bukkit.broadcastMessage("line of siight");
 
                         if (bee.getAnger() > 0) {
                             Entity target = bee.getTarget();
-                            if (target != null && target.getUniqueId().equals(p.getUniqueId()))
-                                beeCreeper(bee);
+                            if (target != null && target.getUniqueId().equals(p.getUniqueId())) {
+                                //adjustSpeed(bee);
+                            }
                             continue;
                         }
 
 
                         // checks passed
-
+                        Bukkit.broadcastMessage("attack");
                         bee.setAnger(800); // for some reason, AngerTime is always a random value between 400 and 800
                         bee.setTarget(p);
                         // p.sendMessage("anger: " + bee.getAnger());
@@ -62,7 +71,20 @@ public class FlyingCreepers implements Listener {
             }
         };
 
-        scheduler.runEvery(task, 5);
+        // scheduler.runEvery(task, 5);
+    }
+
+    @EventHandler
+    public void onEntityBlockDamage(EntityDamageEvent e) {
+        // detect suffocating creeper
+        if (!(e.getEntityType() == EntityType.CREEPER &&
+            e.getEntity().isInsideVehicle() &&
+            e.getEntity().getVehicle().getType() == EntityType.BEE &&
+            e.getCause() == DamageCause.SUFFOCATION))
+            return;
+
+        // prevent suffocation    
+        e.setCancelled(true);
     }
 
     @EventHandler
@@ -90,7 +112,7 @@ public class FlyingCreepers implements Listener {
         //Bukkit.broadcastMessage("rem when far away: "+bee.getRemoveWhenFarAway() + creeper.getRemoveWhenFarAway());
     }
 
-    public void beeCreeper(Bee bee) {
+    public void adjustSpeed(Bee bee) {
         Vector currVel = bee.getVelocity().clone();
         //Vector oldVel = beeMap.getOrDefault(bee.getUniqueId(), currVel).clone();
         Vector newVel = currVel.clone();

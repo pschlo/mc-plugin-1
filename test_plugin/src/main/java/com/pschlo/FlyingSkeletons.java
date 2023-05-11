@@ -20,7 +20,7 @@ public class FlyingSkeletons implements Listener {
             !(e.getEntity().isInsideVehicle())))
             return;
 
-        int PROB_FLY = 100;
+        int PROB_FLY = 10;
         if (!(App.getRandTrue(PROB_FLY)))
             return;
 
